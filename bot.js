@@ -46,6 +46,84 @@ client.connect();
 
 // All players will be archived here
 let playerBase = [];
+// Pot of points
+let pointPot = {
+    _pointsA: 0,
+    _numBetsA:0,
+    _pointsB: 0,
+    _numBetsB:0,
+    _potOpen: true,
+
+    getPoints(){
+        return `Fighter A: ${this._pointsA} -- Fighter B: ${this._pointsB}`;
+    },
+    endFight(winner){
+        if (this._potOpen) {
+            let reward = this._pointsA + this._pointsB;
+            if (winner === 'A')
+                reward /= this._numBetsA; 
+            
+            if (winner === 'B')
+                reward /= this._numBetsB; 
+            
+            this._pointsA = 0;
+            this._numBetsA = 0;
+            this._pointsB = 0;
+            this._numBetsB = 0;
+            this._potOpen = false;
+            
+            return reward;
+        };
+    },
+    makeBet(fighter, points){
+        if (this._potOpen){
+            if (fighter === 'A'){
+                this._pointsA += points;
+                this._numBetsA++;
+            };
+            if (fighter === 'B'){
+                this._pointsB += points;
+                this._numBetsB++;
+            };
+        };
+    },
+    togglePot(status){
+        if (status === 'open')
+            this._potOpen = true;
+        if (status === 'close')
+            this._potOpen = false;
+    }
+};
+// Returns each player an object for them to play
+const newPlayer = (userName) => {
+    return {
+        _playerName: userName,
+        _points: 5000,
+        _lastBet: 0,
+        _choosenFighter: '',
+
+        getPoints (){
+            return this._points;
+        },
+        getLastBet (){
+            return this._lastBet;
+        },
+        addPoints (points){
+            this._points = this._points + points;
+        },
+        losePoints (points){
+            this._points -= points;
+            this._lastBet = points;
+        },
+        clearLastBet(){
+            this._lastBet = 0;
+            this._choosenFighter = '';
+        },
+        setFighter(choise){
+            this._choosenFighter = choise;
+        }
+    };    
+};
 
 // Called every time a message comes in
 function onMessageHandler (channel, userstate, message, self) {
@@ -58,14 +136,22 @@ function onMessageHandler (channel, userstate, message, self) {
             break;
         case "chat":
             // This is a chat message..
-            const commandName = message.trim();
+            let commandName = message.trim();
+            let fighter = '';
+            let points = 0;
+            let stringPoints = '';
+            if (commandName.includes('!bet')) {
+                fighter = commandName[5];
+                stringPoints = commandName.slice(7);
+                points = parseInt(stringPoints);
+                commandName = '!bet';
+            }
             const userName = userstate["display-name"];
             const userType = userstate["user-type"];
-            //console.log ("message: " + commandName);
             if (userType === "mod" || userType === "admin" || userName === channelName){
-                modCommands(channel, userName, commandName);    
+                modCommands(channel, userName, commandName, fighter);    
             }else {
-                commonCommands(userName, commandName);
+                commonCommands(channel,userName, commandName, fighter, points);
             }
             break;
         case "whisper":
@@ -89,37 +175,6 @@ function killBot (channelName, displayName) {
     return "bot killed";
 };
 
-// Returns each player an object for them to play
-const newPlayer = (userName) => {
-    return {
-        _playerName: userName,
-        _points: 5000,
-        _lastBet: 0,
-        _choosenFighter: '',
-
-        getPoints (){
-            return this._points;
-        },
-        getLastBet (){
-            return this._lastBet;
-        },
-        addPoints (points){
-            this._points += points;
-        },
-        losePoints (points){
-            this._points -= points;
-            this._lastBet = points;
-        },
-        clearLastBet(){
-            this._lastBet = 0;
-            this._choosenFighter = '';
-        },
-        setFighter(choise){
-            this._choosenFighter = choise;
-        }
-    };    
-};
-
 // Mod user commands
 function modCommands(channel, user, command, fighter) {
     switch (command){
@@ -129,45 +184,77 @@ function modCommands(channel, user, command, fighter) {
             break;
         case '!openbet':
         // Here mods open bets
+            pointPot.togglePot('open');
+            client.say(channelName, 'Bets are OPEN! Please make your bets ;)');
+            break;
+        case '!closebet':
+        // Here mods close bets
+            pointPot.togglePot('close');
+            client.say(channelName, 'Bets are CLOSED! Best of luck to all :D');
             break;
         case '!winner':
         // Mod notifies the bot that the left fighter won the fight
+            pointPot.endFight(fighter);
+
             break;
-        case '!resetpoints':
+        case '!endtourney':
         // Here mods can reset points for a new tornament
+        // Announce winner
             break;
     }; 
 };
 
 // Common user commands
-function commonCommands(user, command, fighter, points) {
+function commonCommands(channel, user, command, fighter, points) {
     // Boolean flag, true if user was indexed in playerBase
-    const joinedFlag = (playerBase._playerName.findIndex(user) !== -1);
+    const playerIndex = playerBase.findIndex(player => player._playerName === user)
+    const joinedFlag = (playerIndex !== -1);
+    let lastBet = 0;
     switch (command) {
         case '!join':
         // User joins the game
             if (!joinedFlag)
                 playerBase.push(newPlayer(user));
+                console.log(playerBase);
             break;
         case '!bet':
         // Player bets on fighter
             if (joinedFlag) {
-                const playerIndex = playerBase._playerName.findIndex(user);
-                playerBase[playerIndex].losePoints(points);
-                playerBase[playerIndex].setFighter(fighter);
-                // need to somehow add points to pot for fighter
+                lastBet = playerBase[playerIndex].getLastBet();
+                if (lastBet === 0){
+                    // falta lockear si esta cerradas las apuestas
+                    playerBase[playerIndex].losePoints(points);
+                    playerBase[playerIndex].setFighter(fighter);
+                    pointPot.makeBet(fighter, points);
+                    console.log(playerBase);
+                }
             }
             break;
         case '!unbet':
         // Player can remove their bet
             if (joinedFlag) {
-                const playerIndex = playerBase._playerName.findIndex(user);
-                const lastBet = playerBase[playerIndex].getLastBet();
+                console.log(lastBet);
+                lastBet = playerBase[playerIndex].getLastBet();
                 if (lastBet > 0) {
                     playerBase[playerIndex].addPoints(lastBet);
                     playerBase[playerIndex].clearLastBet();
-                }                    
+                    // falta remover del pot
+                }   
+                console.log(playerBase);                 
             }
+            break;
+        case '!checkPoints':
+            // implement code for user to check how many points left
+            if (joinedFlag){
+                const pointsLeft = playerBase[playerIndex].getPoints();                
+                client.say(channel, `@${playerBase[playerIndex]._playerName} you have: ${pointsLeft} points`);
+                console.log(playerBase);
+            }
+            break;
+        case '!checkPot':
+            client.say(channel, pointPot.getPoints());
+            console.log(playerBase);
             break;
     };
 };
+// falta hacer to lowercase() todos los comandos
