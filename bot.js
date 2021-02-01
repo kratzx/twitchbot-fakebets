@@ -10,10 +10,10 @@ const opts = {
         secure: true
     },
     identity: {
-        username: "kratzx94",
-        password: "oauth:yblxfm7hffvvui8c67upwjyr2ak4y7"
+        username: "",
+        password: "oauth:"
     },
-    channels: [ "#krathozx" ]
+    channels: [ "" ]
 };
 // Create a client with our options
 const client = new tmi.client(opts);
