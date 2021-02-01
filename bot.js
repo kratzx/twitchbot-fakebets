@@ -185,6 +185,14 @@ function onMessageHandler (channel, userstate, message, self) {
                 points = parseInt(stringPoints);
                 commandName = '!bet';
             }
+            if (commandName.includes('!allin')) {
+                fighter = commandName[7];
+                commandName = '!allin';
+            }
+            if (commandName.includes('$winner')) {
+                fighter = commandName[8];
+                commandName = '$winner';
+            }
             const userName = userstate["display-name"];
             const userType = userstate["user-type"];
             if ((userType === "mod" || userType === "admin" || userName === channelName) && commandName[0] === '$'){
@@ -221,12 +229,16 @@ function modCommands(channel, user, command, fighter) {
         // Command to close the bot in the server
             killBot(channel, user);
             break;
+        case '$ob':
         case '$openbet':
+        case '$openbets':
         // Here mods open bets
             pointPot.togglePot('open');
             client.say(channelName, 'Bets are OPEN! Please make your bets ;)');
             break;
+        case '$cb':
         case '$closebet':
+        case '$closebets':
         // Here mods close bets
             pointPot.togglePot('close');
             client.say(channelName, 'Bets are CLOSED! Best of luck to all :D');
@@ -240,6 +252,7 @@ function modCommands(channel, user, command, fighter) {
                 client.say(channelName, 'Bets are OPEN! Please make your bets ;)');
             }
             break;
+        case '$et':
         case '$endtourney':
         // Here mods can reset points for a new tornament and announce winner
             let winner = checkPlayerWinner(); // TODO: make this funct
@@ -263,6 +276,7 @@ function commonCommands(channel, user, command, fighter, points) {
     let lastBet = 0;
 
     switch (command) {
+        case '!j':
         case '!join':
         // User joins the game
             if (!joinedFlag)
@@ -272,7 +286,8 @@ function commonCommands(channel, user, command, fighter, points) {
         // Player bets on fighter
             if (joinedFlag && betsOpen) {
                 lastBet = playerBase[playerIndex].getLastBet();
-                if (lastBet === 0){                
+                let currentPoints = playerBase[playerIndex].getPoints();
+                if (lastBet === 0 && currentPoints > 0 && currentPoints >= points){                
                     playerBase[playerIndex].losePoints(points);
                     playerBase[playerIndex].setFighter(fighter);
                     playerBase[playerIndex].addNumBets();
@@ -280,6 +295,7 @@ function commonCommands(channel, user, command, fighter, points) {
                 }
             }
             break;
+        case '!ub':
         case '!unbet':
         // Player can remove their bet
             if (joinedFlag && betsOpen) {
@@ -293,15 +309,31 @@ function commonCommands(channel, user, command, fighter, points) {
                 }          
             }
             break;
+        case '!p':
         case '!checkpoints':
             // implement code for user to check how many points left
             if (joinedFlag){
                 const pointsLeft = playerBase[playerIndex].getPoints();                
-                client.say(channel, `@${playerBase[playerIndex]._playerName} you have: ${pointsLeft} points`);
+                client.say(channel, `@${playerBase[playerIndex].getPlayerName()} you have: ${pointsLeft} points`);
             }
             break;
+        case '!pot':
         case '!checkpot':
             client.say(channel, pointPot.getPoints());
+            break;
+        case '!allin':
+        //case '!all':
+            if (joinedFlag && betsOpen) {
+                lastBet = playerBase[playerIndex].getLastBet();
+                let currentPoints = playerBase[playerIndex].getPoints();
+                if (lastBet === 0 && currentPoints > 0){                
+                    playerBase[playerIndex].losePoints(currentPoints);
+                    playerBase[playerIndex].setFighter(fighter);
+                    playerBase[playerIndex].addNumBets();
+                    pointPot.makeBet(fighter, currentPoints);
+                    client.say(channel, `DAAAYUUUM @${playerBase[playerIndex].getPlayerName()} has gone ALL IN!! With ${currentPoints} points PogChamp`);      
+                }
+            }
             break;
     };
 };
@@ -310,6 +342,7 @@ function rewardPlayers(fighter, reward){
     for (let index in playerBase){
         if (playerBase[index].getChoosenFighter() === fighter)
             playerBase[index].addPoints(reward);
+    playerBase[index].clearLastBet();
     }
 };
 
@@ -331,5 +364,5 @@ function checkPlayerWinner(){
             winnerBets = currentPlayerBets;
         }
     }
-    return `${winnerName} with ${winnerPoints}`;
+    return `${winnerName} WITH ${winnerPoints}`;
 }
