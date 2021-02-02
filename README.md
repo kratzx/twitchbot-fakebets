@@ -6,6 +6,7 @@
 * [Get Environment Variables](#get-environment-variables)
 * [Setup](#setup)
 * [Commands](#commands)
+* [General gameflow](#general-gameflow)
 
 ## General info
 A bot that connects to a twitch chat and allows chat members to make bets with fake points. Made to work with tmi.js. 
@@ -54,3 +55,7 @@ All commands must be sent in the twitch chat. Mod commands can be issued by a mo
 * Check available points - `!p`, `!checkpoints`
 * Check points in the pot - `!pot`, `!checkpot`
 * Bets all the available points - `!allin {fighter}`
+
+## General gameflow
+Note: Mods can also join the game and make bets.
+![alt text](./image/gameflow.jpeg "Flow chart of the game")
