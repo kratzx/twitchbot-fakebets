@@ -27,9 +27,8 @@ $ node bot.js
 All commands must be sent in the twitch chat. Mod commands can be issued by a mod or the channel owner.
 ### Mod commands:
 #### Kill the bot
-$kill
+* Kill the bot `$kill`
 * $ob , $openbet, $openbets
-test
 * $cb, $closebet, $closebets
 * $winner {fighter}, $w {fighter}
 * $et, $endtourney
