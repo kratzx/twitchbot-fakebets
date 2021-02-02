@@ -27,14 +27,13 @@ To start, you’ll need three environment variables:
 
 ## Setup
 To run this project:
-1. Make a Twitch account for the bot to use
-2. Install node.js and npm, following the instructions on the links.
-3. On the command line, install tmi.js :
+1. Install node.js and npm, following the instructions on the links.
+2. On the command line, install tmi.js :
 `npm install tmi.js`
-4. Clone this repo with: 
+3. Clone this repo with: 
 `gh repo clone kratzx/twitchbot-fakebets`
-5. In the repo folder, modify *.env.example* and replace the three environmental variables with the values obtained above.
-6. Change *.env.example* to *.env*
+4. In the repo folder, modify *.env.example* and replace the three environmental variables with the values obtained above.
+5. Change *.env.example* to *.env*
 6. Run bot.js locally using node:
 `node bot.js`
 7. Now that the bot is running and connected to the Twitch IRC network, we can interact with it. 
