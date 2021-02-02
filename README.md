@@ -26,17 +26,16 @@ $ node bot.js
 ## Commands
 All commands must be sent in the twitch chat. Mod commands can be issued by a mod or the channel owner.
 ### Mod commands:
-#### Kill the bot
-* Kill the bot `$kill`
-* $ob , $openbet, $openbets
-* $cb, $closebet, $closebets
-* $winner {fighter}, $w {fighter}
-* $et, $endtourney
-* $togglereopen
+* Kill the bot - `$kill`
+* Open bets for players - `$ob`, `$openbet`, `$openbets`
+* Close bets for players - `$cb`, `$closebet`, `$closebets`
+* Notify fighter who won - `$winner {fighter}`, `$w {fighter}`
+* End tournament and announce player with most points - `$et`, `$endtourney`
+* Toggle automatic open bets after nofitied winning fighter - `$togglereopen`
 ### Common commands:
-* !j, !join
-* !bet {fighter}
-* !ub, !unbet
-* !p, !checkpoints
-* !pot, !checkpot
-* !allin {fighter}
+* Player joins betting game - `!j`, `!join`
+* Make bet - `!bet {fighter} {points}`
+* Cancel last bet - `!ub`, `!unbet`
+* Check available points - `!p`, `!checkpoints`
+* Check points in the pot - `!pot`, `!checkpot`
+* Bets all the available points - `!allin {fighter}`
