@@ -16,10 +16,25 @@ Project is created with:
 * Node.js
 	
 ## Setup
-To run this project, install it locally using npm:
+To run this project:
 
 ```
-$ cd ../lorem
-$ npm install
-$ npm start
+$ npm i tmi.js
+$ gh repo clone kratzx/twitchbot-fakebets
+$ node bot.js
 ```
+## Commands
+### Mod commands:
+	$kill
+	$ob , $openbet, $openbets
+	$cb, $closebet, $closebets
+	$winner, $w
+	$et, $endtourney
+	$togglereopen
+### Common commands:
+	!j, !join
+	!bet
+	!ub, !unbet
+	!p, !checkpoints
+	!pot, !checkpot
+	!allin
