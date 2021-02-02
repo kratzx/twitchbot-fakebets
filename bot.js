@@ -175,31 +175,18 @@ function onMessageHandler (channel, userstate, message, self) {
             break;
         case "chat":
             // This is a chat message..
-            let commandName = (message.trim()).toLowerCase();
-            let fighter = '';
-            let points = 0;
-            let stringPoints = '';
-            if (commandName.includes('!bet')) {
-                fighter = commandName[5];
-                stringPoints = commandName.slice(7);
-                points = parseInt(stringPoints);
-                commandName = '!bet';
-            }
-            if (commandName.includes('!allin')) {
-                fighter = commandName[7];
-                commandName = '!allin';
-            }
-            if (commandName.includes('$winner')) {
-                fighter = commandName[8];
-                commandName = '$winner';
-            }
+            let input = cleanCommand(message);
             const userName = userstate["display-name"];
             const userType = userstate["user-type"];
-            if ((userType === "mod" || userType === "admin" || userName === channelName) && commandName[0] === '$'){
-                modCommands(channel, userName, commandName, fighter);    
+            if ((userType === "mod" || userType === "admin" || userName === channelName) && input.command[0] === '$'){
+                modCommands(channel, userName, input.command, input.fighter);    
             }else {
-                commonCommands(channel,userName, commandName, fighter, points);
+                commonCommands(channel,userName, input.command, input.fighter, input.points);
             }
+            // FOR DEBUG  USE
+            console.log("cmd: " + input.command + " fgt: " + input.fighter + " pts: " + input.points);
+            console.log(pointPot.getPoints());
+            
             break;
         case "whisper":
             // This is a whisper..
@@ -246,7 +233,7 @@ function modCommands(channel, user, command, fighter) {
         case '$winner':
         // Mod notifies the bot that the left fighter won the fight
             let reward = pointPot.endFight(fighter);
-            rewardPlayers(fighter, reward); // TODO: make this funct
+            rewardPlayers(fighter, reward);
             if (pointPot.getReOpenStatus()) {
                 pointPot.togglePot('open');
                 client.say(channelName, 'Bets are OPEN! Please make your bets ;)');
@@ -255,7 +242,7 @@ function modCommands(channel, user, command, fighter) {
         case '$et':
         case '$endtourney':
         // Here mods can reset points for a new tornament and announce winner
-            let winner = checkPlayerWinner(); // TODO: make this funct
+            let winner = checkPlayerWinner();
             client.say(channelName, `THE WINNER IS @${winner}!! CONGRATULATIONS!! :D`);
             break;
         case '$togglereopen':
@@ -270,7 +257,7 @@ function modCommands(channel, user, command, fighter) {
 
 // Common user commands
 function commonCommands(channel, user, command, fighter, points) {
-    const playerIndex = playerBase.findIndex(player => player._playerName === user)
+    const playerIndex = playerBase.findIndex(player => player._playerName === user);
     const joinedFlag = (playerIndex !== -1);
     const betsOpen = pointPot.getStatus();
     let lastBet = 0;
@@ -365,4 +352,66 @@ function checkPlayerWinner(){
         }
     }
     return `${winnerName} WITH ${winnerPoints}`;
+}
+
+function cleanCommand(message){
+    let command = (message.trim()).toLowerCase();
+    let fighter = '';
+    let points = 0;
+    // Check if any message that comes is one that takes an additional variable and variable is within expected
+    // !bet {fighter} {points} ; gotta check if fighter and points are string and num
+    if (command.includes('!bet')) {
+        fighter = command[5];
+        points = parseInt(command.slice(7));
+        // check if {fighter} is string and {points} a number
+        if (typeof fighter === 'string' && typeof points === 'number'){
+            // check if {fighter} is either 'A' or 'B'
+            if (fighter === 'a' || fighter === 'b'){
+                // check if {points} was parsed correctly
+                if (points !== NaN)
+                    command = '!bet';
+                else
+                    command = 'ignore';
+            }else
+                command = 'ignore';
+        }else 
+            command = 'ignore';   
+    }
+    // !allin {fighter} ; gotta check if fighter is string and is 'A' or 'B'
+    else if (command.includes('!allin')) {
+        fighter = command[7];
+        if (typeof fighter === 'string'){
+            if (fighter === 'a' || fighter === 'b')
+                command = '!allin';
+            else 
+                command = 'ignore';    
+        }else 
+            command = 'ignore';
+    }
+    // $winner {fighter} ; gotta check if fighter is string and is 'A' or 'B'
+    else if (command.includes('$winner')) {
+        fighter = command[8];
+        if (typeof fighter === 'string'){
+            if (fighter === 'a' || fighter === 'b')
+                command = '$winner';
+            else 
+                command = 'ignore';    
+        }else 
+            command = 'ignore';
+    }
+    else if (command.includes('$w')){
+        fighter = command[3];
+        if (typeof fighter === 'string'){
+            if (fighter === 'a' || fighter === 'b')
+                command = '$winner';
+            else 
+                command = 'ignore';    
+        }else 
+            command = 'ignore';
+    }
+    return {
+        command,
+        fighter,
+        points
+    };
 }
