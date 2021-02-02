@@ -24,17 +24,20 @@ $ gh repo clone kratzx/twitchbot-fakebets
 $ node bot.js
 ```
 ## Commands
+All commands must be sent in the twitch chat. Mod commands can be issued by a mod or the channel owner.
 ### Mod commands:
-	$kill
-	$ob , $openbet, $openbets
-	$cb, $closebet, $closebets
-	$winner, $w
-	$et, $endtourney
-	$togglereopen
+#### Kill the bot
+$kill
+* $ob , $openbet, $openbets
+test
+* $cb, $closebet, $closebets
+* $winner {fighter}, $w {fighter}
+* $et, $endtourney
+* $togglereopen
 ### Common commands:
-	!j, !join
-	!bet
-	!ub, !unbet
-	!p, !checkpoints
-	!pot, !checkpot
-	!allin
+* !j, !join
+* !bet {fighter}
+* !ub, !unbet
+* !p, !checkpoints
+* !pot, !checkpot
+* !allin {fighter}
