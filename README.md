@@ -16,6 +16,7 @@ This project was inspired to make fighting games tournaments on Twitch more inte
 ## Technologies
 Project is created with:
 * tmi.js: 1.7.1 
+* dotenv: 8.2.0
 * Node.js
 
 ## Get Environment Variables
@@ -31,10 +32,10 @@ To run this project:
 1. Install node.js and npm, following the instructions on the links.
 2. Clone this repo with: 
 `gh repo clone kratzx/twitchbot-fakebets`
-3. On the command line, install tmi.js :
+3. On the command line, install dependencies on project root:
 `npm install`
-4. In the repo folder, modify *.env.example* and replace the three environmental variables with the values obtained above.
-5. Change *.env.example* to *.env*
+4. In the repo folder, modify *'.env.example'* and replace the three environmental variables with the values obtained above.
+5. Change *'.env.example'* to *'.env'*
 6. Run bot.js locally using node:
 `node bot.js`
 7. Now that the bot is running and connected to the Twitch IRC network, we can interact with it. 
@@ -58,4 +59,5 @@ All commands must be sent in the twitch chat. Mod commands can be issued by a mo
 
 ## General gameflow
 Note: Mods can also join the game and make bets.
+
 ![alt text](./image/gameflow.jpeg "Flow chart of the game")

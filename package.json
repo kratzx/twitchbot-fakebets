@@ -1,0 +1,36 @@
+{
+  "name": "twitchfakebets",
+  "version": "1.0.0",
+  "description": "Twitch chatbot for making fake bets on chat on js.",
+  "main": "bot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kratzx/twitchbot-fakebets.git"
+  },
+  "keywords": [
+    "tmi",
+    "tmijs",
+    "twitch",
+    "twitch.tv",
+    "stream",
+    "chat",
+    "message",
+    "messaging",
+    "interface",
+    "bot",
+    "bets"
+  ],
+  "author": "kratzx",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kratzx/twitchbot-fakebets/issues"
+  },
+  "homepage": "https://github.com/kratzx/twitchbot-fakebets#readme",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "tmi.js": "^1.7.1"
+  }
+}
