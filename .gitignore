@@ -1,2 +1,3 @@
 # User enviroment file
 *.env
+node_modules/

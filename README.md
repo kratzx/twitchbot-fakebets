@@ -29,10 +29,10 @@ To start, you’ll need three environment variables:
 ## Setup
 To run this project:
 1. Install node.js and npm, following the instructions on the links.
-2. On the command line, install tmi.js :
-`npm install tmi.js`
-3. Clone this repo with: 
+2. Clone this repo with: 
 `gh repo clone kratzx/twitchbot-fakebets`
+3. On the command line, install tmi.js :
+`npm install`
 4. In the repo folder, modify *.env.example* and replace the three environmental variables with the values obtained above.
 5. Change *.env.example* to *.env*
 6. Run bot.js locally using node:
